@@ -99,14 +99,14 @@ export default function Home() {
                 </div>
 
                 {/* Main Chat Area */}
-                <div className='max-w-4xl mx-auto'>
+                <div className='max-w-6xl mx-auto'>
                     <div
                         className={`${
                             isDark
                                 ? 'bg-gray-800 border-gray-600'
                                 : 'bg-white border-gray-200'
                         } rounded-xl shadow-lg overflow-hidden border`}>
-                        <div className='h-[600px]'>
+                        <div className='h-[700px]'>
                             <ChatBox
                                 messages={messages}
                                 onSendMessage={handleSendMessage}
@@ -130,52 +130,210 @@ export default function Home() {
                                 className={`text-lg font-semibold mb-4 ${textColor}`}>
                                 How to use:
                             </h3>
-                            <div className='space-y-4'>
+                            <div className='space-y-6'>
+                                {/* Text Messages */}
                                 <div>
                                     <h4
-                                        className={`font-medium mb-2 ${textSecondary}`}>
-                                        Send text message:
+                                        className={`font-medium mb-2 ${textSecondary} flex items-center`}>
+                                        💬 Send text message:
                                     </h4>
                                     <p className={`text-sm ${textSecondary}`}>
-                                        Simply type your message and send it.
+                                        Simply type your message and send it for
+                                        regular chat.
                                     </p>
                                 </div>
+
+                                {/* Code Editor Mode */}
                                 <div>
                                     <h4
-                                        className={`font-medium mb-2 ${textSecondary}`}>
-                                        Send code:
+                                        className={`font-medium mb-2 ${textSecondary} flex items-center`}>
+                                        🔧 Code Editor Mode:
                                     </h4>
-                                    <p className={`text-sm ${textSecondary}`}>
-                                        Send your HTML/CSS/JavaScript code in
-                                        multiple ways:
+                                    <p
+                                        className={`text-sm ${textSecondary} mb-3`}>
+                                        Click "Code Editor" to switch to
+                                        advanced coding mode with:
                                     </p>
+                                    <ul
+                                        className={`text-sm ${textSecondary} space-y-1 ml-4`}>
+                                        <li>
+                                            • Language selection (JavaScript,
+                                            HTML, Python, Java, etc.)
+                                        </li>
+                                        <li>
+                                            • Code sections (HTML + CSS +
+                                            JavaScript)
+                                        </li>
+                                        <li>
+                                            • Built-in examples for each
+                                            language
+                                        </li>
+                                        <li>
+                                            • Syntax highlighting and validation
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                {/* Code Input Methods */}
+                                <div>
+                                    <h4
+                                        className={`font-medium mb-2 ${textSecondary} flex items-center`}>
+                                        📝 Code Input Methods:
+                                    </h4>
                                     <div
                                         className={`text-xs ${
                                             isDark
                                                 ? 'bg-gray-700 text-gray-200'
                                                 : 'bg-gray-100 text-gray-800'
-                                        } p-3 rounded mt-2 space-y-2`}>
+                                        } p-4 rounded space-y-3`}>
+                                        {/* Method 1: Standalone */}
                                         <div>
-                                            <strong>1. Standalone HTML:</strong>
-                                            <pre className='mt-1'>{`<small>Hello World!</small>`}</pre>
-                                        </div>
-                                        <div>
-                                            <strong>2. Standalone CSS:</strong>
-                                            <pre className='mt-1'>{`body { color: blue; }`}</pre>
-                                        </div>
-                                        <div>
-                                            <strong>
-                                                3. Standalone JavaScript:
+                                            <strong className='text-blue-400'>
+                                                1. Standalone Code:
                                             </strong>
-                                            <pre className='mt-1'>{`console.log("Hello!");`}</pre>
+                                            <div className='mt-2 space-y-1'>
+                                                <div>
+                                                    <span className='text-green-400'>
+                                                        HTML:
+                                                    </span>
+                                                    <pre className='mt-1'>{`<h1>Hello World!</h1>`}</pre>
+                                                </div>
+                                                <div>
+                                                    <span className='text-green-400'>
+                                                        CSS:
+                                                    </span>
+                                                    <pre className='mt-1'>{`body { color: blue; font-size: 18px; }`}</pre>
+                                                </div>
+                                                <div>
+                                                    <span className='text-green-400'>
+                                                        JavaScript:
+                                                    </span>
+                                                    <pre className='mt-1'>{`console.log("Hello!"); alert("Welcome!");`}</pre>
+                                                </div>
+                                                <div>
+                                                    <span className='text-green-400'>
+                                                        Python:
+                                                    </span>
+                                                    <pre className='mt-1'>{`print("Hello World!")`}</pre>
+                                                </div>
+                                            </div>
                                         </div>
+
+                                        {/* Method 2: Markdown */}
                                         <div>
-                                            <strong>4. Markdown format:</strong>
-                                            <pre className='mt-1'>{`\`\`\`html
-<div>Hello World!</div>
+                                            <strong className='text-blue-400'>
+                                                2. Markdown Format:
+                                            </strong>
+                                            <pre className='mt-2'>{`\`\`\`html
+<div class="container">
+    <h1>Welcome</h1>
+    <p>This is a paragraph</p>
+</div>
+\`\`\`
+
+\`\`\`css
+.container {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+}
+\`\`\`
+
+\`\`\`javascript
+document.querySelector('.container').addEventListener('click', function() {
+    this.style.transform = 'scale(1.1)';
+});
 \`\`\``}</pre>
                                         </div>
+
+                                        {/* Method 3: Code Sections */}
+                                        <div>
+                                            <strong className='text-blue-400'>
+                                                3. Code Sections Mode:
+                                            </strong>
+                                            <p className='mt-1 text-gray-400'>
+                                                Use the "Code Sections" button
+                                                to write HTML, CSS, and
+                                                JavaScript in separate areas.
+                                            </p>
+                                        </div>
                                     </div>
+                                </div>
+
+                                {/* Features */}
+                                <div>
+                                    <h4
+                                        className={`font-medium mb-2 ${textSecondary} flex items-center`}>
+                                        ✨ Features:
+                                    </h4>
+                                    <ul
+                                        className={`text-sm ${textSecondary} space-y-1 ml-4`}>
+                                        <li>
+                                            • <strong>Live Preview:</strong> See
+                                            your code run instantly
+                                        </li>
+                                        <li>
+                                            • <strong>14 Languages:</strong>{' '}
+                                            JavaScript, HTML, Python, Java, C++,
+                                            C#, PHP, Ruby, Go, Rust, Swift,
+                                            Kotlin, TypeScript
+                                        </li>
+                                        <li>
+                                            •{' '}
+                                            <strong>Built-in Examples:</strong>{' '}
+                                            Click "Examples" for ready-to-use
+                                            code
+                                        </li>
+                                        <li>
+                                            •{' '}
+                                            <strong>Syntax Validation:</strong>{' '}
+                                            Get real-time CSS error checking
+                                        </li>
+                                        <li>
+                                            • <strong>Dark/Light Theme:</strong>{' '}
+                                            Toggle between themes
+                                        </li>
+                                        <li>
+                                            •{' '}
+                                            <strong>Responsive Design:</strong>{' '}
+                                            Works on all devices
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                {/* Quick Tips */}
+                                <div>
+                                    <h4
+                                        className={`font-medium mb-2 ${textSecondary} flex items-center`}>
+                                        💡 Quick Tips:
+                                    </h4>
+                                    <ul
+                                        className={`text-sm ${textSecondary} space-y-1 ml-4`}>
+                                        <li>
+                                            • Use{' '}
+                                            <code className='bg-gray-200 dark:bg-gray-600 px-1 rounded'>
+                                                Shift+Enter
+                                            </code>{' '}
+                                            to send code in editor mode
+                                        </li>
+                                        <li>
+                                            • Click examples to automatically
+                                            insert them
+                                        </li>
+                                        <li>
+                                            • CSS validation helps catch syntax
+                                            errors
+                                        </li>
+                                        <li>
+                                            • Code sections are perfect for web
+                                            development
+                                        </li>
+                                        <li>
+                                            • Single input mode is great for
+                                            quick code snippets
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
