@@ -1167,7 +1167,12 @@ export default function ChatBox({
     return (
         <div className={`flex flex-col h-full ${bgColor} rounded-lg shadow-sm`}>
             {/* Messages Area */}
-            <div className='flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar'>
+            <div
+                className={`flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar ${
+                    isEditorMode && showCodeSections
+                        ? 'max-h-[300px]'
+                        : 'max-h-[500px]'
+                }`}>
                 {messages.length === 0 ? (
                     <div className={`text-center ${textColor} mt-8`}>
                         <div className='text-6xl mb-4'>💬</div>

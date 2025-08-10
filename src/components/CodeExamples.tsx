@@ -4,8 +4,10 @@ import React, { useState } from 'react';
 import {
     CodeBracketIcon,
     ClipboardDocumentIcon,
+    CheckIcon,
 } from '@heroicons/react/24/outline';
 import { useTheme } from '@/contexts/ThemeContext';
+import Toast from './Toast';
 
 interface CodeExample {
     title: string;
@@ -823,6 +825,9 @@ interface CodeExamplesProps {
 
 export default function CodeExamples({ onSelectExample }: CodeExamplesProps) {
     const [selectedExample, setSelectedExample] = useState<number | null>(null);
+    const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
     const { theme } = useTheme();
 
     const isDark = theme === 'dark';
@@ -839,22 +844,28 @@ export default function CodeExamples({ onSelectExample }: CodeExamplesProps) {
         ? 'text-gray-400 hover:text-blue-400'
         : 'text-gray-500 hover:text-blue-600';
 
-    const handleCopyCode = (code: string) => {
+    const handleCopyCode = (code: string, index: number) => {
         navigator.clipboard.writeText(code);
-        // You can show a toast notification here
+        setCopiedIndex(index);
+        setToastMessage('Code copied to clipboard!');
+        setShowToast(true);
+
+        // Reset the copied state after 2 seconds
+        setTimeout(() => {
+            setCopiedIndex(null);
+        }, 2000);
     };
 
     return (
-        <div
-            className={`${bgColor} rounded-lg p-6 shadow-sm border ${borderColor}`}>
-            <div className='flex items-center mb-4'>
-                <CodeBracketIcon className={`h-6 w-6 ${iconColor} mr-2`} />
-                <h3 className={`text-lg font-semibold ${textColor}`}>
-                    Ready-to-use Code Examples
-                </h3>
-            </div>
-
-            <div className='space-y-4'>
+        <div className='w-full'>
+            <Toast
+                message={toastMessage}
+                type='success'
+                isVisible={showToast}
+                onClose={() => setShowToast(false)}
+                duration={2000}
+            />
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto'>
                 {examples.map((example, index) => (
                     <div
                         key={index}
@@ -876,11 +887,15 @@ export default function CodeExamples({ onSelectExample }: CodeExamplesProps) {
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        handleCopyCode(example.code);
+                                        handleCopyCode(example.code, index);
                                     }}
                                     className={`p-1 transition-colors ${copyIconColor}`}
                                     title='Copy code'>
-                                    <ClipboardDocumentIcon className='h-4 w-4' />
+                                    {copiedIndex === index ? (
+                                        <CheckIcon className='h-4 w-4 text-green-500' />
+                                    ) : (
+                                        <ClipboardDocumentIcon className='h-4 w-4' />
+                                    )}
                                 </button>
                             </div>
                         </div>

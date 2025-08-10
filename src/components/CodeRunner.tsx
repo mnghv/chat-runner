@@ -79,8 +79,9 @@ export default function CodeRunner({ html, css, javascript }: CodeRunnerProps) {
             <iframe
                 ref={iframeRef}
                 sandbox='allow-scripts allow-same-origin'
-                className='w-full h-64 border-0 bg-white'
+                className='w-full h-80 sm:h-96 md:h-[450px] border-0 bg-white rounded-lg shadow-sm'
                 title='Code Preview'
+                style={{ minHeight: '320px' }}
             />
         </div>
     );

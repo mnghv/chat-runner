@@ -47,7 +47,11 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                 isUserMessage ? 'justify-end' : 'justify-start'
             }`}>
             <div
-                className={`max-w-[80%] rounded-lg p-4 border ${getBubbleClasses()}`}>
+                className={`${
+                    isCodeMessage
+                        ? 'max-w-[99%] sm:max-w-[98%] lg:max-w-[96%]'
+                        : 'max-w-[90%] sm:max-w-[80%]'
+                } rounded-lg p-3 sm:p-4 border ${getBubbleClasses()}`}>
                 {/* Message Header */}
                 <div className='flex items-center justify-between mb-2'>
                     <span className='text-sm font-medium'>
@@ -104,18 +108,20 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                                 isDark ? 'border-gray-600' : 'border-gray-300'
                             }`}>
                             <div
-                                className={`px-3 py-2 text-sm font-medium border-b ${
+                                className={`px-4 py-3 text-sm font-medium border-b ${
                                     isDark
                                         ? 'bg-gray-700 border-gray-600 text-gray-200'
                                         : 'bg-gray-100 border-gray-300 text-gray-800'
                                 }`}>
-                                Code Preview
+                                🎨 Code Preview
                             </div>
-                            <CodeRunner
-                                html={message.code.html}
-                                css={message.code.css}
-                                javascript={message.code.javascript}
-                            />
+                            <div className='p-2'>
+                                <CodeRunner
+                                    html={message.code.html}
+                                    css={message.code.css}
+                                    javascript={message.code.javascript}
+                                />
+                            </div>
                         </div>
                     )}
 
