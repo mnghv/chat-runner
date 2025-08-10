@@ -36,56 +36,72 @@ chat-runner/
 │   ├── app/                    # Next.js App Router
 │   │   ├── globals.css         # Global styles
 │   │   ├── layout.tsx          # Root layout
-│   │   └── page.tsx            # Home page
+│   │   └── page.tsx            # Home page (optimized)
 │   ├── components/             # React components
-│   │   ├── ChatBox.tsx         # Main chat component
-│   │   ├── MessageBubble.tsx   # Message display
+│   │   ├── ChatBox.tsx         # Main chat component (optimized)
+│   │   ├── MessageBubble.tsx   # Message display (optimized)
 │   │   ├── CodeRunner.tsx      # Code execution
 │   │   ├── CodeExamples.tsx    # Code examples
 │   │   └── Toast.tsx           # Toast notifications
 │   ├── types/                  # TypeScript types
 │   │   └── chat.ts
 │   ├── utils/                  # Utility functions
-│   │   ├── codeParser.ts       # Code parsing
+│   │   ├── codeParser.ts       # Code parsing (optimized)
 │   │   └── testData.ts         # Test data
 │   └── config/                 # Configuration
 │       └── app.ts
 ├── docs/                       # Documentation
 ├── public/                     # Static files
-└── package.json
+└── package.json                # Optimized dependencies
 ```
 
 ## Development Workflow
 
 ### 1. Component Development
 
-When creating new components:
+When creating new components, follow these performance best practices:
 
 1. Create the component file in `src/components/`
 2. Add TypeScript interfaces for props
 3. Use Tailwind CSS for styling
 4. Add proper error handling
 5. Write JSDoc comments for complex functions
+6. **Use React.memo for performance optimization**
+7. **Use useMemo and useCallback for expensive operations**
 
 Example:
 ```typescript
+import React, { useMemo, useCallback } from 'react';
+
 interface MyComponentProps {
   title: string;
   onAction?: () => void;
+  theme: 'light' | 'dark';
 }
 
 /**
- * MyComponent - A reusable component
+ * MyComponent - A reusable component with performance optimizations
  * @param props - Component props
  * @returns JSX element
  */
-export default function MyComponent({ title, onAction }: MyComponentProps) {
+const MyComponent = React.memo(({ title, onAction, theme }: MyComponentProps) => {
+  // Memoize expensive calculations
+  const themeStyles = useMemo(() => ({
+    bgColor: theme === 'dark' ? 'bg-gray-800' : 'bg-white',
+    textColor: theme === 'dark' ? 'text-white' : 'text-gray-800',
+  }), [theme]);
+
+  // Memoize event handlers
+  const handleAction = useCallback(() => {
+    onAction?.();
+  }, [onAction]);
+
   return (
-    <div className="bg-white rounded-lg p-4">
-      <h2 className="text-lg font-semibold">{title}</h2>
+    <div className={`${themeStyles.bgColor} rounded-lg p-4`}>
+      <h2 className={`text-lg font-semibold ${themeStyles.textColor}`}>{title}</h2>
       {onAction && (
         <button 
-          onClick={onAction}
+          onClick={handleAction}
           className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
         >
           Action
@@ -93,250 +109,249 @@ export default function MyComponent({ title, onAction }: MyComponentProps) {
       )}
     </div>
   );
-}
-```
-
-### 2. State Management
-
-For simple state, use React hooks:
-
-```typescript
-const [messages, setMessages] = useState<Message[]>([]);
-const [isLoading, setIsLoading] = useState(false);
-```
-
-For complex state, consider using:
-- Zustand (lightweight)
-- Redux Toolkit (complex apps)
-- React Query (server state)
-
-### 3. API Integration
-
-Create API routes in `src/app/api/`:
-
-```typescript
-// src/app/api/messages/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-
-export async function GET() {
-  // Handle GET request
-  return NextResponse.json({ messages: [] });
-}
-
-export async function POST(request: NextRequest) {
-  // Handle POST request
-  const body = await request.json();
-  return NextResponse.json({ success: true });
-}
-```
-
-### 4. Testing
-
-Create test files with `.test.ts` or `.spec.ts` extension:
-
-```typescript
-// src/utils/codeParser.test.ts
-import { parseCodeFromMessage, isCodeMessage } from './codeParser';
-
-describe('codeParser', () => {
-  test('should detect code message', () => {
-    const message = '```html\n<div>test</div>\n```';
-    expect(isCodeMessage(message)).toBe(true);
-  });
-
-  test('should parse code blocks', () => {
-    const message = '```html\n<div>test</div>\n```';
-    const result = parseCodeFromMessage(message);
-    expect(result?.html).toBe('<div>test</div>');
-  });
 });
+
+MyComponent.displayName = 'MyComponent';
+
+export default MyComponent;
 ```
 
-Run tests:
-```bash
-npm test
+### 2. Performance Optimization Guidelines
+
+#### React.memo Usage
+- Use `React.memo` for components that receive stable props
+- Add `displayName` for better debugging
+- Only memoize components that actually benefit from it
+
+#### useMemo Best Practices
+- Memoize expensive calculations
+- Memoize theme-dependent styles
+- Memoize filtered/sorted arrays
+- Use proper dependency arrays
+
+#### useCallback Best Practices
+- Memoize event handlers passed as props
+- Memoize functions used in useEffect dependencies
+- Avoid creating new functions in render
+
+#### Example of Optimized Component:
+```typescript
+import React, { useState, useMemo, useCallback } from 'react';
+
+interface OptimizedComponentProps {
+  items: string[];
+  onItemSelect: (item: string) => void;
+  theme: 'light' | 'dark';
+}
+
+const OptimizedComponent = React.memo(({ items, onItemSelect, theme }: OptimizedComponentProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Memoize filtered items
+  const filteredItems = useMemo(() => {
+    return items.filter(item => 
+      item.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [items, searchTerm]);
+
+  // Memoize theme styles
+  const styles = useMemo(() => ({
+    container: theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-800',
+    input: theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300',
+  }), [theme]);
+
+  // Memoize event handlers
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
+  const handleItemClick = useCallback((item: string) => {
+    onItemSelect(item);
+  }, [onItemSelect]);
+
+  return (
+    <div className={`p-4 rounded-lg ${styles.container}`}>
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={handleSearchChange}
+        className={`w-full p-2 border rounded ${styles.input}`}
+        placeholder="Search items..."
+      />
+      <div className="mt-4 space-y-2">
+        {filteredItems.map((item, index) => (
+          <button
+            key={index}
+            onClick={() => handleItemClick(item)}
+            className="w-full text-left p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+});
+
+OptimizedComponent.displayName = 'OptimizedComponent';
+
+export default OptimizedComponent;
 ```
 
-## Code Style
+### 3. State Management
 
-### TypeScript
+Use React's built-in state management with performance optimizations:
 
+```typescript
+// Good: Using useCallback for state updates
+const [items, setItems] = useState<string[]>([]);
+
+const addItem = useCallback((newItem: string) => {
+  setItems(prev => [...prev, newItem]);
+}, []);
+
+const removeItem = useCallback((index: number) => {
+  setItems(prev => prev.filter((_, i) => i !== index));
+}, []);
+
+// Good: Using useMemo for derived state
+const sortedItems = useMemo(() => {
+  return [...items].sort();
+}, [items]);
+
+const itemCount = useMemo(() => {
+  return items.length;
+}, [items]);
+```
+
+### 4. Code Parser Development
+
+When working with the code parser, follow these guidelines:
+
+```typescript
+// Use pre-compiled regex patterns
+const REGEX_PATTERNS = {
+  html: /```html\s*([\s\S]*?)\s*```/i,
+  css: /```css\s*([\s\S]*?)\s*```/i,
+  js: /```(?:js|javascript)\s*([\s\S]*?)\s*```/i,
+} as const;
+
+// Implement caching for expensive operations
+const parseCache = new Map<string, CodeBlock | null>();
+
+export function parseCodeFromMessage(message: string): CodeBlock | null {
+  // Check cache first
+  if (parseCache.has(message)) {
+    return parseCache.get(message)!;
+  }
+
+  // Parse the message
+  const result = parseMessage(message);
+  
+  // Cache the result
+  parseCache.set(message, result);
+  
+  return result;
+}
+```
+
+## Performance Best Practices
+
+### 1. Bundle Optimization
+- Remove unused dependencies
+- Use dynamic imports for large components
+- Optimize images and assets
+- Enable compression
+
+### 2. Rendering Optimization
+- Use React.memo for expensive components
+- Avoid inline objects and functions
+- Use proper key props for lists
+- Implement virtual scrolling for large lists
+
+### 3. Memory Management
+- Clean up event listeners
+- Clear caches when appropriate
+- Use WeakMap/WeakSet for object references
+- Implement proper cleanup in useEffect
+
+### 4. TypeScript Best Practices
 - Use strict mode
-- Define interfaces for all props
-- Use type guards for runtime checks
-- Prefer `interface` over `type` for objects
+- Avoid `any` types
+- Define proper interfaces
+- Use utility types when appropriate
 
-### React
+## Testing
 
-- Use functional components with hooks
-- Destructure props in function parameters
-- Use proper dependency arrays in useEffect
-- Handle loading and error states
-
-### CSS/Tailwind
-
-- Use Tailwind utility classes
-- Create custom components for repeated patterns
-- Use CSS variables for theme colors
-- Follow mobile-first approach
-
-## Performance
-
-### Optimization Techniques
-
-1. **Code Splitting**
-```typescript
-import dynamic from 'next/dynamic';
-
-const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
-  loading: () => <div>Loading...</div>
-});
-```
-
-2. **Memoization**
-```typescript
-const MemoizedComponent = React.memo(MyComponent);
-const expensiveValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
-```
-
-3. **Lazy Loading**
-```typescript
-const LazyImage = ({ src, alt }) => (
-  <img 
-    src={src} 
-    alt={alt}
-    loading="lazy"
-  />
-);
-```
-
-### Bundle Analysis
-
-Analyze bundle size:
+### Unit Tests
 ```bash
-npm run build
-npm run analyze
+npm run test
 ```
 
-## Security
-
-### Code Execution
-
-1. **Sandbox Environment**
-   - Use iframe with sandbox attributes
-   - Remove dangerous window properties
-   - Limit execution time
-
-2. **Input Validation**
-   - Validate all user inputs
-   - Sanitize HTML content
-   - Use Content Security Policy
-
-3. **Rate Limiting**
-   - Implement rate limiting for API endpoints
-   - Monitor for abuse patterns
-
-## Deployment
-
-### Environment Variables
-
-Create `.env.local`:
-```env
-NEXT_PUBLIC_API_URL=http://localhost:3000
-DATABASE_URL=your_database_url
-SECRET_KEY=your_secret_key
-```
-
-### Build Process
-
-1. **Development**
-```bash
-npm run dev
-```
-
-2. **Production Build**
-```bash
-npm run build
-npm start
-```
-
-3. **Static Export**
-```bash
-npm run export
-```
-
-### Deployment Platforms
-
-#### Vercel (Recommended)
-```bash
-npm install -g vercel
-vercel --prod
-```
-
-#### Netlify
-```bash
-npm run build
-netlify deploy --prod --dir=out
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **TypeScript Errors**
-   - Check import paths
-   - Verify type definitions
-   - Run `npm run type-check`
-
-2. **Build Errors**
-   - Clear `.next` folder
-   - Check for missing dependencies
-   - Verify environment variables
-
-3. **Runtime Errors**
-   - Check browser console
-   - Verify API endpoints
-   - Check network requests
-
-### Debug Tools
-
-1. **React DevTools**
-2. **Next.js Debug Mode**
-```bash
-DEBUG=* npm run dev
-```
-
-3. **TypeScript Debug**
+### Type Checking
 ```bash
 npm run type-check
 ```
 
+### Linting
+```bash
+npm run lint
+```
+
+## Performance Monitoring
+
+### Development Tools
+- React DevTools Profiler
+- Chrome DevTools Performance tab
+- Bundle analyzer
+- Lighthouse audits
+
+### Performance Budgets
+- Bundle size: < 300KB
+- First Contentful Paint: < 1.5s
+- Largest Contentful Paint: < 2.5s
+- Cumulative Layout Shift: < 0.1
+
+## Deployment
+
+### Build Optimization
+```bash
+# Analyze bundle size
+ANALYZE=true npm run build
+
+# Production build
+npm run build
+```
+
+### Environment Variables
+```bash
+# .env.local
+NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_ENVIRONMENT=development
+```
+
+## Troubleshooting
+
+### Common Performance Issues
+1. **Unnecessary Re-renders**: Use React.memo and useCallback
+2. **Large Bundle Size**: Remove unused dependencies
+3. **Memory Leaks**: Clean up event listeners and caches
+4. **Slow Parsing**: Implement caching for expensive operations
+
+### Debugging Tips
+- Use React DevTools Profiler
+- Monitor bundle size with webpack-bundle-analyzer
+- Check for memory leaks in Chrome DevTools
+- Use TypeScript strict mode for better code quality
+
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Update documentation
-6. Submit a pull request
+1. Follow the performance optimization guidelines
+2. Write tests for new features
+3. Update documentation
+4. Use TypeScript for all new code
+5. Follow the established code style
 
-### Commit Convention
+---
 
-Use conventional commits:
-```
-feat: add new feature
-fix: bug fix
-docs: documentation changes
-style: formatting changes
-refactor: code refactoring
-test: add tests
-chore: maintenance tasks
-```
-
-## Resources
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [React Documentation](https://react.dev)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [Heroicons](https://heroicons.com) 
+*This guide is maintained and updated as new optimizations are implemented.* 

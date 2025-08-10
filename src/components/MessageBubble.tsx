@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
     CodeBracketIcon,
     EyeIcon,
@@ -14,7 +14,7 @@ interface MessageBubbleProps {
     message: Message;
 }
 
-export default function MessageBubble({ message }: MessageBubbleProps) {
+const MessageBubble = React.memo(({ message }: MessageBubbleProps) => {
     const [showCode, setShowCode] = useState(false);
     const [showPreview, setShowPreview] = useState(true); // Default to showing preview
     const { theme } = useTheme();
@@ -23,23 +23,52 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
     const isCodeMessage = message.type === 'code';
     const isUserMessage = message.sender === 'user';
 
-    const getBubbleClasses = () => {
-        if (isUserMessage) {
-            return 'bg-blue-500 text-white';
-        } else {
-            return isDark
-                ? 'bg-gray-800 text-white border-gray-600'
-                : 'bg-white text-gray-800 border-gray-200';
-        }
-    };
+    // Memoize theme-dependent styles
+    const themeStyles = useMemo(() => {
+        const getBubbleClasses = () => {
+            if (isUserMessage) {
+                return 'bg-blue-500 text-white';
+            } else {
+                return isDark
+                    ? 'bg-gray-800 text-white border-gray-600'
+                    : 'bg-white text-gray-800 border-gray-200';
+            }
+        };
 
-    const getTimestampClasses = () => {
-        if (isUserMessage) {
-            return 'text-blue-100';
-        } else {
-            return isDark ? 'text-gray-400' : 'text-gray-500';
-        }
-    };
+        const getTimestampClasses = () => {
+            if (isUserMessage) {
+                return 'text-blue-100';
+            } else {
+                return isDark ? 'text-gray-400' : 'text-gray-500';
+            }
+        };
+
+        return {
+            bubbleClasses: getBubbleClasses(),
+            timestampClasses: getTimestampClasses(),
+            borderColor: isDark ? 'border-gray-600' : 'border-gray-300',
+            headerBg: isDark
+                ? 'bg-gray-700 border-gray-600 text-gray-200'
+                : 'bg-gray-100 border-gray-300 text-gray-800',
+            codeBg: isDark ? 'bg-gray-950' : 'bg-gray-900',
+            textSecondary: isDark ? 'text-gray-400' : 'text-gray-600',
+        };
+    }, [isDark, isUserMessage]);
+
+    // Memoize toggle handlers
+    const toggleCode = useCallback(() => {
+        setShowCode((prev) => !prev);
+    }, []);
+
+    const togglePreview = useCallback(() => {
+        setShowPreview((prev) => !prev);
+    }, []);
+
+    // Memoize timestamp
+    const formattedTimestamp = useMemo(
+        () => new Date(message.timestamp).toLocaleTimeString('en-US'),
+        [message.timestamp]
+    );
 
     return (
         <div
@@ -51,7 +80,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                     isCodeMessage
                         ? 'max-w-[99%] sm:max-w-[98%] lg:max-w-[96%]'
                         : 'max-w-[90%] sm:max-w-[80%]'
-                } rounded-lg p-3 sm:p-4 border ${getBubbleClasses()}`}>
+                } rounded-lg p-3 sm:p-4 border ${themeStyles.bubbleClasses}`}>
                 {/* Message Header */}
                 <div className='flex items-center justify-between mb-2'>
                     <span className='text-sm font-medium'>
@@ -61,14 +90,14 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                         <div className='flex items-center space-x-2'>
                             <CodeBracketIcon className='h-4 w-4' />
                             <button
-                                onClick={() => setShowCode(!showCode)}
+                                onClick={toggleCode}
                                 className='text-xs hover:underline flex items-center space-x-1'>
                                 <span>
                                     {showCode ? 'Hide Code' : 'Show Code'}
                                 </span>
                             </button>
                             <button
-                                onClick={() => setShowPreview(!showPreview)}
+                                onClick={togglePreview}
                                 className='text-xs hover:underline flex items-center space-x-1'>
                                 {showPreview ? (
                                     <EyeSlashIcon className='h-3 w-3' />
@@ -90,9 +119,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                     {/* Text Content */}
                     {isCodeMessage ? (
                         <div
-                            className={`text-sm italic ${
-                                isDark ? 'text-gray-400' : 'text-gray-600'
-                            }`}>
+                            className={`text-sm italic ${themeStyles.textSecondary}`}>
                             Code sent - check preview below
                         </div>
                     ) : (
@@ -104,15 +131,9 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                     {/* Code Preview - Show first by default */}
                     {isCodeMessage && showPreview && message.code && (
                         <div
-                            className={`border rounded-lg overflow-hidden ${
-                                isDark ? 'border-gray-600' : 'border-gray-300'
-                            }`}>
+                            className={`border rounded-lg overflow-hidden ${themeStyles.borderColor}`}>
                             <div
-                                className={`px-4 py-3 text-sm font-medium border-b ${
-                                    isDark
-                                        ? 'bg-gray-700 border-gray-600 text-gray-200'
-                                        : 'bg-gray-100 border-gray-300 text-gray-800'
-                                }`}>
+                                className={`px-4 py-3 text-sm font-medium border-b ${themeStyles.headerBg}`}>
                                 🎨 Code Preview
                             </div>
                             <div className='p-2'>
@@ -128,9 +149,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                     {/* Code Content - Hidden by default */}
                     {isCodeMessage && showCode && (
                         <div
-                            className={`p-4 rounded-lg font-mono text-sm overflow-x-auto ${
-                                isDark ? 'bg-gray-950' : 'bg-gray-900'
-                            } text-green-400`}>
+                            className={`p-4 rounded-lg font-mono text-sm overflow-x-auto ${themeStyles.codeBg} text-green-400`}>
                             <div className='mb-2 text-yellow-400'>HTML:</div>
                             <pre className='mb-4'>{message.code?.html}</pre>
 
@@ -146,10 +165,14 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                 </div>
 
                 {/* Timestamp */}
-                <div className={`text-xs mt-2 ${getTimestampClasses()}`}>
-                    {new Date(message.timestamp).toLocaleTimeString('en-US')}
+                <div className={`text-xs mt-2 ${themeStyles.timestampClasses}`}>
+                    {formattedTimestamp}
                 </div>
             </div>
         </div>
     );
-}
+});
+
+MessageBubble.displayName = 'MessageBubble';
+
+export default MessageBubble;

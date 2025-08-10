@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+    useState,
+    useRef,
+    useEffect,
+    useMemo,
+    useCallback,
+} from 'react';
 import {
     PaperAirplaneIcon,
     CodeBracketIcon,
@@ -956,137 +962,33 @@ export default function ChatBox({
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const { theme } = useTheme();
 
-    const isDark = theme === 'dark';
-    const bgColor = isDark ? 'bg-gray-900' : 'bg-gray-50';
-    const inputBgColor = isDark ? 'bg-gray-700' : 'bg-white';
-    const inputBorderColor = isDark ? 'border-gray-600' : 'border-gray-300';
-    const inputTextColor = isDark ? 'text-white' : 'text-gray-900';
-    const placeholderColor = isDark
-        ? 'placeholder-gray-400'
-        : 'placeholder-gray-500';
-    const textColor = isDark ? 'text-gray-400' : 'text-gray-500';
-    const toggleBgColor = isDark ? 'bg-gray-700' : 'bg-gray-100';
-    const toggleActiveBgColor = isDark ? 'bg-blue-600' : 'bg-blue-500';
-    const toggleTextColor = isDark ? 'text-gray-300' : 'text-gray-600';
-    const toggleActiveTextColor = 'text-white';
+    // Memoize theme-dependent styles
+    const themeStyles = useMemo(() => {
+        const isDark = theme === 'dark';
+        return {
+            bgColor: isDark ? 'bg-gray-900' : 'bg-gray-50',
+            inputBgColor: isDark ? 'bg-gray-700' : 'bg-white',
+            inputBorderColor: isDark ? 'border-gray-600' : 'border-gray-300',
+            inputTextColor: isDark ? 'text-white' : 'text-gray-900',
+            placeholderColor: isDark
+                ? 'placeholder-gray-400'
+                : 'placeholder-gray-500',
+            textColor: isDark ? 'text-gray-400' : 'text-gray-500',
+            toggleBgColor: isDark ? 'bg-gray-700' : 'bg-gray-100',
+            toggleActiveBgColor: isDark ? 'bg-blue-600' : 'bg-blue-500',
+            toggleTextColor: isDark ? 'text-gray-300' : 'text-gray-600',
+            toggleActiveTextColor: 'text-white',
+        };
+    }, [theme]);
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
+    // Memoize current examples
+    const currentExamples = useMemo(
+        () => languageExamples[language as keyof typeof languageExamples],
+        [language]
+    );
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
-
-    // Auto-resize textarea
-    useEffect(() => {
-        if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto';
-            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-        }
-    }, [inputValue]);
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (isLoading) return;
-
-        let messageToSend = '';
-
-        if (showCodeSections) {
-            // If using code sections, combine all sections
-            const sections = [];
-
-            if (['html', 'javascript'].includes(language)) {
-                // For web languages, use separate sections
-                if (htmlCode.trim())
-                    sections.push(`\`\`\`html\n${htmlCode.trim()}\n\`\`\``);
-                if (cssCode.trim())
-                    sections.push(`\`\`\`css\n${cssCode.trim()}\n\`\`\``);
-                if (jsCode.trim())
-                    sections.push(`\`\`\`javascript\n${jsCode.trim()}\n\`\`\``);
-            } else {
-                // For other languages, use single section
-                if (htmlCode.trim())
-                    sections.push(
-                        `\`\`\`${language}\n${htmlCode.trim()}\n\`\`\``
-                    );
-            }
-
-            if (sections.length > 0) {
-                messageToSend = sections.join('\n\n');
-            }
-        } else {
-            // Single input mode
-            messageToSend = inputValue.trim();
-        }
-
-        if (messageToSend && !isLoading) {
-            onSendMessage(messageToSend);
-            setInputValue('');
-            setHtmlCode('');
-            setCssCode('');
-            setJsCode('');
-            // Reset textarea height
-            if (textareaRef.current) {
-                textareaRef.current.style.height = 'auto';
-            }
-        }
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && e.shiftKey) {
-            e.preventDefault();
-            handleSubmit(e as any);
-        }
-    };
-
-    const toggleEditorMode = () => {
-        setIsEditorMode(!isEditorMode);
-    };
-
-    const toggleExamples = () => {
-        setShowExamples(!showExamples);
-    };
-
-    const toggleCodeSections = () => {
-        setShowCodeSections(!showCodeSections);
-    };
-
-    const insertExample = (code: string) => {
-        if (showCodeSections) {
-            if (['html', 'javascript'].includes(language)) {
-                // Parse the example code and distribute to appropriate sections for web languages
-                const htmlMatch = code.match(/```html\s*([\s\S]*?)\s*```/i);
-                const cssMatch = code.match(/```css\s*([\s\S]*?)\s*```/i);
-                const jsMatch = code.match(
-                    /```(?:js|javascript)\s*([\s\S]*?)\s*```/i
-                );
-
-                if (htmlMatch) setHtmlCode(htmlMatch[1].trim());
-                if (cssMatch) setCssCode(cssMatch[1].trim());
-                if (jsMatch) setJsCode(jsMatch[1].trim());
-            } else {
-                // For other languages, check if it has markdown blocks or is plain code
-                const languageMatch = code.match(
-                    new RegExp(
-                        `\`\`\`${language}\\s*([\\s\\S]*?)\\s*\`\`\``,
-                        'i'
-                    )
-                );
-                if (languageMatch) {
-                    setHtmlCode(languageMatch[1].trim());
-                } else {
-                    // If no markdown blocks, treat as plain code
-                    setHtmlCode(code);
-                }
-            }
-        } else {
-            setInputValue(code);
-        }
-        setShowExamples(false);
-    };
-
-    const getLanguageColor = (lang: string) => {
+    // Memoize language color
+    const languageColor = useMemo(() => {
         const colors: { [key: string]: string } = {
             javascript: '#f7df1e',
             html: '#e34c26',
@@ -1103,14 +1005,12 @@ export default function ChatBox({
             kotlin: '#f18e33',
             typescript: '#3178c6',
         };
-        return colors[lang] || '#6b7280';
-    };
+        return colors[language] || '#6b7280';
+    }, [language]);
 
-    const currentExamples =
-        languageExamples[language as keyof typeof languageExamples];
-
+    // CSS validation function
     const validateCSS = (cssCode: string) => {
-        const errors = [];
+        const errors: string[] = [];
         const lines = cssCode.split('\n');
 
         lines.forEach((line, index) => {
@@ -1147,7 +1047,8 @@ export default function ChatBox({
         return errors;
     };
 
-    const getCSSValidationMessage = (cssCode: string) => {
+    // Memoize CSS validation
+    const cssValidationMessage = useMemo(() => {
         const errors = validateCSS(cssCode);
         if (errors.length > 0) {
             return (
@@ -1162,19 +1063,197 @@ export default function ChatBox({
             );
         }
         return null;
-    };
+    }, [cssCode]);
+
+    // Memoize form submission logic
+    const handleSubmit = useCallback(
+        (e: React.FormEvent) => {
+            e.preventDefault();
+            if (isLoading) return;
+
+            let messageToSend = '';
+
+            if (showCodeSections) {
+                const sections = [];
+
+                if (['html', 'javascript'].includes(language)) {
+                    if (htmlCode.trim())
+                        sections.push(`\`\`\`html\n${htmlCode.trim()}\n\`\`\``);
+                    if (cssCode.trim())
+                        sections.push(`\`\`\`css\n${cssCode.trim()}\n\`\`\``);
+                    if (jsCode.trim())
+                        sections.push(
+                            `\`\`\`javascript\n${jsCode.trim()}\n\`\`\``
+                        );
+                } else {
+                    if (htmlCode.trim())
+                        sections.push(
+                            `\`\`\`${language}\n${htmlCode.trim()}\n\`\`\``
+                        );
+                }
+
+                if (sections.length > 0) {
+                    messageToSend = sections.join('\n\n');
+                }
+            } else {
+                messageToSend = inputValue.trim();
+            }
+
+            if (messageToSend && !isLoading) {
+                onSendMessage(messageToSend);
+                setInputValue('');
+                setHtmlCode('');
+                setCssCode('');
+                setJsCode('');
+                if (textareaRef.current) {
+                    textareaRef.current.style.height = 'auto';
+                }
+            }
+        },
+        [
+            isLoading,
+            showCodeSections,
+            language,
+            htmlCode,
+            cssCode,
+            jsCode,
+            inputValue,
+            onSendMessage,
+        ]
+    );
+
+    // Memoize key handlers
+    const handleKeyDown = useCallback(
+        (e: React.KeyboardEvent) => {
+            if (e.key === 'Enter' && e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e as React.FormEvent);
+            }
+        },
+        [handleSubmit]
+    );
+
+    // Memoize toggle handlers
+    const toggleEditorMode = useCallback(() => {
+        setIsEditorMode((prev) => !prev);
+    }, []);
+
+    const toggleExamples = useCallback(() => {
+        setShowExamples((prev) => !prev);
+    }, []);
+
+    const toggleCodeSections = useCallback(() => {
+        setShowCodeSections((prev) => !prev);
+    }, []);
+
+    // Memoize example insertion
+    const insertExample = useCallback(
+        (code: string) => {
+            if (showCodeSections) {
+                if (['html', 'javascript'].includes(language)) {
+                    const htmlMatch = code.match(/```html\s*([\s\S]*?)\s*```/i);
+                    const cssMatch = code.match(/```css\s*([\s\S]*?)\s*```/i);
+                    const jsMatch = code.match(
+                        /```(?:js|javascript)\s*([\s\S]*?)\s*```/i
+                    );
+
+                    if (htmlMatch) setHtmlCode(htmlMatch[1].trim());
+                    if (cssMatch) setCssCode(cssMatch[1].trim());
+                    if (jsMatch) setJsCode(jsMatch[1].trim());
+                } else {
+                    const languageMatch = code.match(
+                        new RegExp(
+                            `\`\`\`${language}\\s*([\\s\\S]*?)\\s*\`\`\``,
+                            'i'
+                        )
+                    );
+                    if (languageMatch) {
+                        setHtmlCode(languageMatch[1].trim());
+                    } else {
+                        setHtmlCode(code);
+                    }
+                }
+            } else {
+                setInputValue(code);
+            }
+            setShowExamples(false);
+        },
+        [showCodeSections, language]
+    );
+
+    // Memoize input change handlers
+    const handleInputChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            setInputValue(e.target.value);
+        },
+        []
+    );
+
+    const handleTextareaChange = useCallback(
+        (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            setInputValue(e.target.value);
+        },
+        []
+    );
+
+    const handleHtmlCodeChange = useCallback(
+        (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            setHtmlCode(e.target.value);
+        },
+        []
+    );
+
+    const handleCssCodeChange = useCallback(
+        (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            setCssCode(e.target.value);
+        },
+        []
+    );
+
+    const handleJsCodeChange = useCallback(
+        (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            setJsCode(e.target.value);
+        },
+        []
+    );
+
+    const handleLanguageChange = useCallback(
+        (e: React.ChangeEvent<HTMLSelectElement>) => {
+            setLanguage(e.target.value);
+        },
+        []
+    );
+
+    // Memoize scroll function
+    const scrollToBottom = useCallback(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, []);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages, scrollToBottom]);
+
+    // Auto-resize textarea
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+        }
+    }, [inputValue]);
 
     return (
-        <div className={`flex flex-col h-full ${bgColor} rounded-lg shadow-sm`}>
+        <div
+            className={`flex flex-col h-full ${themeStyles.bgColor} rounded-lg shadow-sm`}>
             {/* Messages Area */}
             <div
                 className={`flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar ${
                     isEditorMode && showCodeSections
-                        ? 'max-h-[300px]'
-                        : 'max-h-[500px]'
+                        ? 'max-h-[600px]'
+                        : 'max-h-[700px]'
                 }`}>
                 {messages.length === 0 ? (
-                    <div className={`text-center ${textColor} mt-8`}>
+                    <div
+                        className={`text-center ${themeStyles.textColor} mt-8`}>
                         <div className='text-6xl mb-4'>💬</div>
                         <h3 className='text-lg font-medium'>Start chatting!</h3>
                         <p className='text-sm'>
@@ -1187,7 +1266,8 @@ export default function ChatBox({
                     ))
                 )}
                 {isLoading && (
-                    <div className={`flex items-center space-x-2 ${textColor}`}>
+                    <div
+                        className={`flex items-center space-x-2 ${themeStyles.textColor}`}>
                         <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500'></div>
                         <span className='text-sm'>Typing...</span>
                     </div>
@@ -1198,7 +1278,7 @@ export default function ChatBox({
             {/* Input Area */}
             <div
                 className={`border-t ${
-                    isDark
+                    theme === 'dark'
                         ? 'border-gray-600 bg-gray-800'
                         : 'border-gray-200 bg-white'
                 } p-4 rounded-b-lg`}>
@@ -1210,8 +1290,8 @@ export default function ChatBox({
                             onClick={toggleEditorMode}
                             className={`flex items-center space-x-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
                                 isEditorMode
-                                    ? `${toggleActiveBgColor} ${toggleActiveTextColor}`
-                                    : `${toggleBgColor} ${toggleTextColor} hover:bg-gray-200 dark:hover:bg-gray-600`
+                                    ? `${themeStyles.toggleActiveBgColor} ${themeStyles.toggleActiveTextColor}`
+                                    : `${themeStyles.toggleBgColor} ${themeStyles.toggleTextColor} hover:bg-gray-200 dark:hover:bg-gray-600`
                             }`}>
                             {isEditorMode ? (
                                 <>
@@ -1229,13 +1309,14 @@ export default function ChatBox({
 
                     {isEditorMode && (
                         <div className='flex items-center space-x-2'>
-                            <span className={`text-xs ${textColor}`}>
+                            <span
+                                className={`text-xs ${themeStyles.textColor}`}>
                                 Language:
                             </span>
                             <select
                                 value={language}
-                                onChange={(e) => setLanguage(e.target.value)}
-                                className={`text-xs px-2 py-1 rounded border ${inputBorderColor} ${inputBgColor} ${inputTextColor} focus:outline-none focus:ring-1 focus:ring-blue-500`}>
+                                onChange={handleLanguageChange}
+                                className={`text-xs px-2 py-1 rounded border ${themeStyles.inputBorderColor} ${themeStyles.inputBgColor} ${themeStyles.inputTextColor} focus:outline-none focus:ring-1 focus:ring-blue-500`}>
                                 <option value='javascript'>JavaScript</option>
                                 <option value='html'>HTML</option>
                                 <option value='python'>Python</option>
@@ -1255,11 +1336,7 @@ export default function ChatBox({
                             <button
                                 type='button'
                                 onClick={toggleCodeSections}
-                                className={`text-xs px-2 py-1 rounded border ${inputBorderColor} ${inputBgColor} ${inputTextColor} hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
-                                    showCodeSections
-                                        ? 'bg-blue-500 text-white'
-                                        : ''
-                                }`}
+                                className={`text-xs px-2 py-1 rounded border ${themeStyles.inputBorderColor} ${themeStyles.inputBgColor} ${themeStyles.inputTextColor} hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors`}
                                 title='Toggle code sections'>
                                 {showCodeSections
                                     ? 'Single Input'
@@ -1270,7 +1347,7 @@ export default function ChatBox({
                             <button
                                 type='button'
                                 onClick={toggleExamples}
-                                className={`text-xs px-2 py-1 rounded border ${inputBorderColor} ${inputBgColor} ${inputTextColor} hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors`}
+                                className={`text-xs px-2 py-1 rounded border ${themeStyles.inputBorderColor} ${themeStyles.inputBgColor} ${themeStyles.inputTextColor} hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors`}
                                 title='Show examples'>
                                 Examples
                             </button>
@@ -1281,14 +1358,15 @@ export default function ChatBox({
                 {/* Language Examples */}
                 {isEditorMode && showExamples && currentExamples && (
                     <div
-                        className={`mb-3 p-3 rounded-lg border ${inputBorderColor} ${inputBgColor}`}>
+                        className={`mb-3 p-3 rounded-lg border ${themeStyles.inputBorderColor} ${themeStyles.inputBgColor}`}>
                         <div className='flex items-center justify-between mb-2'>
-                            <h4 className={`text-sm font-medium ${textColor}`}>
+                            <h4
+                                className={`text-sm font-medium ${themeStyles.textColor}`}>
                                 {currentExamples.title}
                             </h4>
                             <button
                                 onClick={toggleExamples}
-                                className={`text-xs ${textColor} hover:text-blue-400`}>
+                                className={`text-xs ${themeStyles.textColor} hover:text-blue-400`}>
                                 ✕
                             </button>
                         </div>
@@ -1296,17 +1374,17 @@ export default function ChatBox({
                             {currentExamples.examples.map((example, index) => (
                                 <div
                                     key={index}
-                                    className={`p-2 rounded border ${inputBorderColor} cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors`}
+                                    className={`p-2 rounded border ${themeStyles.inputBorderColor} cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors`}
                                     onClick={() => insertExample(example.code)}>
                                     <div className='flex items-center justify-between mb-1'>
                                         <span
-                                            className={`text-xs font-medium ${textColor}`}>
+                                            className={`text-xs font-medium ${themeStyles.textColor}`}>
                                             {example.name}
                                         </span>
                                         <ClipboardDocumentIcon className='h-3 w-3 text-gray-400' />
                                     </div>
                                     <p
-                                        className={`text-xs ${textColor} opacity-75`}>
+                                        className={`text-xs ${themeStyles.textColor} opacity-75`}>
                                         {example.description}
                                     </p>
                                 </div>
@@ -1325,9 +1403,9 @@ export default function ChatBox({
                                     <>
                                         {/* HTML Section - Show for HTML, JavaScript, CSS languages */}
                                         <div
-                                            className={`border ${inputBorderColor} rounded-lg overflow-hidden ${inputBgColor}`}>
+                                            className={`border ${themeStyles.inputBorderColor} rounded-lg overflow-hidden ${themeStyles.inputBgColor}`}>
                                             <div
-                                                className={`px-3 py-2 border-b ${inputBorderColor} flex items-center justify-between`}>
+                                                className={`px-3 py-2 border-b ${themeStyles.inputBorderColor} flex items-center justify-between`}>
                                                 <div className='flex items-center space-x-2'>
                                                     <div
                                                         className='w-3 h-3 rounded-full'
@@ -1336,18 +1414,16 @@ export default function ChatBox({
                                                                 '#e34c26',
                                                         }}></div>
                                                     <span
-                                                        className={`text-xs font-medium ${textColor}`}>
+                                                        className={`text-xs font-medium ${themeStyles.textColor}`}>
                                                         HTML
                                                     </span>
                                                 </div>
                                             </div>
                                             <textarea
                                                 value={htmlCode}
-                                                onChange={(e) =>
-                                                    setHtmlCode(e.target.value)
-                                                }
+                                                onChange={handleHtmlCodeChange}
                                                 placeholder='Write your HTML code here...'
-                                                className={`w-full px-4 py-3 resize-none focus:outline-none ${inputBgColor} ${inputTextColor} ${placeholderColor} font-mono text-sm leading-relaxed`}
+                                                className={`w-full px-4 py-3 resize-none focus:outline-none ${themeStyles.inputBgColor} ${themeStyles.inputTextColor} ${themeStyles.placeholderColor} font-mono text-sm leading-relaxed`}
                                                 style={{ minHeight: '80px' }}
                                                 disabled={isLoading}
                                             />
@@ -1355,9 +1431,9 @@ export default function ChatBox({
 
                                         {/* CSS Section - Show for HTML, JavaScript, CSS languages */}
                                         <div
-                                            className={`border ${inputBorderColor} rounded-lg overflow-hidden ${inputBgColor}`}>
+                                            className={`border ${themeStyles.inputBorderColor} rounded-lg overflow-hidden ${themeStyles.inputBgColor}`}>
                                             <div
-                                                className={`px-3 py-2 border-b ${inputBorderColor} flex items-center justify-between`}>
+                                                className={`px-3 py-2 border-b ${themeStyles.inputBorderColor} flex items-center justify-between`}>
                                                 <div className='flex items-center space-x-2'>
                                                     <div
                                                         className='w-3 h-3 rounded-full'
@@ -1366,29 +1442,27 @@ export default function ChatBox({
                                                                 '#1572b6',
                                                         }}></div>
                                                     <span
-                                                        className={`text-xs font-medium ${textColor}`}>
+                                                        className={`text-xs font-medium ${themeStyles.textColor}`}>
                                                         CSS
                                                     </span>
                                                 </div>
                                             </div>
                                             <textarea
                                                 value={cssCode}
-                                                onChange={(e) =>
-                                                    setCssCode(e.target.value)
-                                                }
+                                                onChange={handleCssCodeChange}
                                                 placeholder='Write your CSS code here... (Example: body { color: blue; })'
-                                                className={`w-full px-4 py-3 resize-none focus:outline-none ${inputBgColor} ${inputTextColor} ${placeholderColor} font-mono text-sm leading-relaxed`}
+                                                className={`w-full px-4 py-3 resize-none focus:outline-none ${themeStyles.inputBgColor} ${themeStyles.inputTextColor} ${themeStyles.placeholderColor} font-mono text-sm leading-relaxed`}
                                                 style={{ minHeight: '80px' }}
                                                 disabled={isLoading}
                                             />
-                                            {getCSSValidationMessage(cssCode)}
+                                            {cssValidationMessage}
                                         </div>
 
                                         {/* JavaScript Section - Show for HTML, JavaScript, CSS languages */}
                                         <div
-                                            className={`border ${inputBorderColor} rounded-lg overflow-hidden ${inputBgColor}`}>
+                                            className={`border ${themeStyles.inputBorderColor} rounded-lg overflow-hidden ${themeStyles.inputBgColor}`}>
                                             <div
-                                                className={`px-3 py-2 border-b ${inputBorderColor} flex items-center justify-between`}>
+                                                className={`px-3 py-2 border-b ${themeStyles.inputBorderColor} flex items-center justify-between`}>
                                                 <div className='flex items-center space-x-2'>
                                                     <div
                                                         className='w-3 h-3 rounded-full'
@@ -1397,18 +1471,16 @@ export default function ChatBox({
                                                                 '#f7df1e',
                                                         }}></div>
                                                     <span
-                                                        className={`text-xs font-medium ${textColor}`}>
+                                                        className={`text-xs font-medium ${themeStyles.textColor}`}>
                                                         JavaScript
                                                     </span>
                                                 </div>
                                             </div>
                                             <textarea
                                                 value={jsCode}
-                                                onChange={(e) =>
-                                                    setJsCode(e.target.value)
-                                                }
+                                                onChange={handleJsCodeChange}
                                                 placeholder='Write your JavaScript code here...'
-                                                className={`w-full px-4 py-3 resize-none focus:outline-none ${inputBgColor} ${inputTextColor} ${placeholderColor} font-mono text-sm leading-relaxed`}
+                                                className={`w-full px-4 py-3 resize-none focus:outline-none ${themeStyles.inputBgColor} ${themeStyles.inputTextColor} ${themeStyles.placeholderColor} font-mono text-sm leading-relaxed`}
                                                 style={{ minHeight: '80px' }}
                                                 disabled={isLoading}
                                             />
@@ -1419,20 +1491,18 @@ export default function ChatBox({
                                 {/* Single Language Section - Show for other languages */}
                                 {!['html', 'javascript'].includes(language) && (
                                     <div
-                                        className={`border ${inputBorderColor} rounded-lg overflow-hidden ${inputBgColor}`}>
+                                        className={`border ${themeStyles.inputBorderColor} rounded-lg overflow-hidden ${themeStyles.inputBgColor}`}>
                                         <div
-                                            className={`px-3 py-2 border-b ${inputBorderColor} flex items-center justify-between`}>
+                                            className={`px-3 py-2 border-b ${themeStyles.inputBorderColor} flex items-center justify-between`}>
                                             <div className='flex items-center space-x-2'>
                                                 <div
                                                     className='w-3 h-3 rounded-full'
                                                     style={{
                                                         backgroundColor:
-                                                            getLanguageColor(
-                                                                language
-                                                            ),
+                                                            languageColor,
                                                     }}></div>
                                                 <span
-                                                    className={`text-xs font-medium ${textColor}`}>
+                                                    className={`text-xs font-medium ${themeStyles.textColor}`}>
                                                     {language.toUpperCase()}
                                                 </span>
                                             </div>
@@ -1443,7 +1513,7 @@ export default function ChatBox({
                                                 setHtmlCode(e.target.value)
                                             }
                                             placeholder={`Write your ${language} code here...`}
-                                            className={`w-full px-4 py-3 resize-none focus:outline-none ${inputBgColor} ${inputTextColor} ${placeholderColor} font-mono text-sm leading-relaxed`}
+                                            className={`w-full px-4 py-3 resize-none focus:outline-none ${themeStyles.inputBgColor} ${themeStyles.inputTextColor} ${themeStyles.placeholderColor} font-mono text-sm leading-relaxed`}
                                             style={{ minHeight: '120px' }}
                                             disabled={isLoading}
                                         />
@@ -1454,21 +1524,19 @@ export default function ChatBox({
                             // Single Input Mode
                             <div className='flex-1 relative'>
                                 <div
-                                    className={`border ${inputBorderColor} rounded-lg overflow-hidden ${inputBgColor}`}>
+                                    className={`border ${themeStyles.inputBorderColor} rounded-lg overflow-hidden ${themeStyles.inputBgColor}`}>
                                     {/* Editor Header */}
                                     <div
-                                        className={`px-3 py-2 border-b ${inputBorderColor} flex items-center justify-between`}>
+                                        className={`px-3 py-2 border-b ${themeStyles.inputBorderColor} flex items-center justify-between`}>
                                         <div className='flex items-center space-x-2'>
                                             <div
                                                 className='w-3 h-3 rounded-full'
                                                 style={{
                                                     backgroundColor:
-                                                        getLanguageColor(
-                                                            language
-                                                        ),
+                                                        languageColor,
                                                 }}></div>
                                             <span
-                                                className={`text-xs font-medium ${textColor}`}>
+                                                className={`text-xs font-medium ${themeStyles.textColor}`}>
                                                 {language.toUpperCase()}
                                             </span>
                                         </div>
@@ -1481,9 +1549,7 @@ export default function ChatBox({
                                     <textarea
                                         ref={textareaRef}
                                         value={inputValue}
-                                        onChange={(e) =>
-                                            setInputValue(e.target.value)
-                                        }
+                                        onChange={handleTextareaChange}
                                         onKeyDown={handleKeyDown}
                                         placeholder={`Write your ${language} code here...\n\nExample:\n${
                                             language === 'javascript'
@@ -1494,7 +1560,7 @@ export default function ChatBox({
                                                 ? 'body { color: blue; }'
                                                 : '// Your code here'
                                         }`}
-                                        className={`w-full px-4 py-3 resize-none focus:outline-none ${inputBgColor} ${inputTextColor} ${placeholderColor} font-mono text-sm leading-relaxed`}
+                                        className={`w-full px-4 py-3 resize-none focus:outline-none ${themeStyles.inputBgColor} ${themeStyles.inputTextColor} ${themeStyles.placeholderColor} font-mono text-sm leading-relaxed`}
                                         style={{ minHeight: '120px' }}
                                         disabled={isLoading}
                                     />
@@ -1505,9 +1571,9 @@ export default function ChatBox({
                         <input
                             type='text'
                             value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)}
+                            onChange={handleInputChange}
                             placeholder='Type your message or send HTML/CSS/JS code...'
-                            className={`flex-1 px-4 py-2 border ${inputBorderColor} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${inputBgColor} ${inputTextColor} ${placeholderColor}`}
+                            className={`flex-1 px-4 py-2 border ${themeStyles.inputBorderColor} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${themeStyles.inputBgColor} ${themeStyles.inputTextColor} ${themeStyles.placeholderColor}`}
                             disabled={isLoading}
                         />
                     )}

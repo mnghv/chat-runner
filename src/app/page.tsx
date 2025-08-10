@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
     ChatBubbleLeftRightIcon,
     ChevronDownIcon,
@@ -17,22 +17,32 @@ import {
     generateId,
 } from '@/utils/codeParser';
 
-export default function Home() {
+const Home = React.memo(() => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showInstructions, setShowInstructions] = useState(true);
     const [showExamples, setShowExamples] = useState(true);
     const { theme } = useTheme();
 
-    const isDark = theme === 'dark';
-    const bgGradient = isDark
-        ? 'from-gray-900 to-gray-800'
-        : 'from-blue-50 to-indigo-100';
-    const textColor = isDark ? 'text-white' : 'text-gray-800';
-    const textSecondary = isDark ? 'text-gray-300' : 'text-gray-600';
-    const iconColor = isDark ? 'text-blue-400' : 'text-blue-600';
+    // Memoize theme-dependent styles
+    const themeStyles = useMemo(() => {
+        const isDark = theme === 'dark';
+        return {
+            bgGradient: isDark
+                ? 'from-gray-900 to-gray-800'
+                : 'from-blue-50 to-indigo-100',
+            textColor: isDark ? 'text-white' : 'text-gray-800',
+            textSecondary: isDark ? 'text-gray-300' : 'text-gray-600',
+            iconColor: isDark ? 'text-blue-400' : 'text-blue-600',
+            cardBg: isDark
+                ? 'bg-gray-800 border-gray-600'
+                : 'bg-white border-gray-200',
+            hoverBg: isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50',
+        };
+    }, [theme]);
 
-    const handleSendMessage = async (text: string) => {
+    // Memoize message handlers
+    const handleSendMessage = useCallback(async (text: string) => {
         const userMessage: Message = {
             id: generateId(),
             text,
@@ -60,11 +70,9 @@ export default function Home() {
             setMessages((prev) => [...prev, systemMessage]);
             setIsLoading(false);
         }, 1000);
-    };
+    }, []);
 
-    const handleSelectExample = (code: string) => {
-        // این تابع می‌تواند کد نمونه را در input قرار دهد
-        // فعلاً فقط یک پیام سیستم ارسال می‌کنیم
+    const handleSelectExample = useCallback((code: string) => {
         const systemMessage: Message = {
             id: generateId(),
             text: 'Selected code example:',
@@ -83,23 +91,34 @@ export default function Home() {
         };
 
         setMessages((prev) => [...prev, systemMessage, codeMessage]);
-    };
+    }, []);
+
+    // Memoize toggle handlers
+    const toggleInstructions = useCallback(() => {
+        setShowInstructions((prev) => !prev);
+    }, []);
+
+    const toggleExamples = useCallback(() => {
+        setShowExamples((prev) => !prev);
+    }, []);
 
     return (
         <div
-            className={`min-h-screen bg-gradient-to-br ${bgGradient} transition-colors duration-200`}>
+            className={`min-h-screen bg-gradient-to-br ${themeStyles.bgGradient} transition-colors duration-200`}>
             <div className='container mx-auto px-4 py-8'>
                 {/* Header */}
                 <div className='text-center mb-8'>
                     <div className='flex items-center justify-center mb-4'>
                         <ChatBubbleLeftRightIcon
-                            className={`h-12 w-12 ${iconColor} mr-3`}
+                            className={`h-12 w-12 ${themeStyles.iconColor} mr-3`}
                         />
-                        <h1 className={`text-4xl font-bold ${textColor}`}>
+                        <h1
+                            className={`text-4xl font-bold ${themeStyles.textColor}`}>
                             Chat Runner
                         </h1>
                     </div>
-                    <p className={`text-lg ${textSecondary} max-w-2xl mx-auto`}>
+                    <p
+                        className={`text-lg ${themeStyles.textSecondary} max-w-2xl mx-auto`}>
                         Chat and run your HTML/CSS/JavaScript code live! Just
                         send your code in markdown format.
                     </p>
@@ -108,11 +127,7 @@ export default function Home() {
                 {/* Main Chat Area */}
                 <div className='max-w-6xl mx-auto'>
                     <div
-                        className={`${
-                            isDark
-                                ? 'bg-gray-800 border-gray-600'
-                                : 'bg-white border-gray-200'
-                        } rounded-xl shadow-lg overflow-hidden border`}>
+                        className={`${themeStyles.cardBg} rounded-xl shadow-lg overflow-hidden border`}>
                         <div className='h-[700px]'>
                             <ChatBox
                                 messages={messages}
@@ -128,20 +143,12 @@ export default function Home() {
                     <div className='grid grid-cols-1 gap-8'>
                         {/* Code Examples Accordion */}
                         <div
-                            className={`${
-                                isDark
-                                    ? 'bg-gray-800 border-gray-600'
-                                    : 'bg-white border-gray-200'
-                            } rounded-lg shadow-sm border`}>
+                            className={`${themeStyles.cardBg} rounded-lg shadow-sm border`}>
                             <button
-                                onClick={() => setShowExamples(!showExamples)}
-                                className={`w-full p-4 flex items-center justify-between ${
-                                    isDark
-                                        ? 'hover:bg-gray-700'
-                                        : 'hover:bg-gray-50'
-                                } transition-colors`}>
+                                onClick={toggleExamples}
+                                className={`w-full p-4 flex items-center justify-between ${themeStyles.hoverBg} transition-colors`}>
                                 <h3
-                                    className={`text-lg font-semibold ${textColor} flex items-center`}>
+                                    className={`text-lg font-semibold ${themeStyles.textColor} flex items-center`}>
                                     <CodeBracketIcon className='h-5 w-5 mr-2' />
                                     Ready-to-use Code Examples
                                 </h3>
@@ -162,22 +169,12 @@ export default function Home() {
 
                         {/* Instructions Accordion */}
                         <div
-                            className={`${
-                                isDark
-                                    ? 'bg-gray-800 border-gray-600'
-                                    : 'bg-white border-gray-200'
-                            } rounded-lg shadow-sm border`}>
+                            className={`${themeStyles.cardBg} rounded-lg shadow-sm border`}>
                             <button
-                                onClick={() =>
-                                    setShowInstructions(!showInstructions)
-                                }
-                                className={`w-full p-4 flex items-center justify-between ${
-                                    isDark
-                                        ? 'hover:bg-gray-700'
-                                        : 'hover:bg-gray-50'
-                                } transition-colors`}>
+                                onClick={toggleInstructions}
+                                className={`w-full p-4 flex items-center justify-between ${themeStyles.hoverBg} transition-colors`}>
                                 <h3
-                                    className={`text-lg font-semibold ${textColor} flex items-center`}>
+                                    className={`text-lg font-semibold ${themeStyles.textColor} flex items-center`}>
                                     <ChatBubbleLeftRightIcon className='h-5 w-5 mr-2' />
                                     How to use:
                                 </h3>
@@ -193,11 +190,11 @@ export default function Home() {
                                         {/* Text Messages */}
                                         <div>
                                             <h4
-                                                className={`font-medium mb-2 ${textSecondary} flex items-center`}>
+                                                className={`font-medium mb-2 ${themeStyles.textSecondary} flex items-center`}>
                                                 💬 Send text message:
                                             </h4>
                                             <p
-                                                className={`text-sm ${textSecondary}`}>
+                                                className={`text-sm ${themeStyles.textSecondary}`}>
                                                 Simply type your message and
                                                 send it for regular chat.
                                             </p>
@@ -206,17 +203,17 @@ export default function Home() {
                                         {/* Code Editor Mode */}
                                         <div>
                                             <h4
-                                                className={`font-medium mb-2 ${textSecondary} flex items-center`}>
+                                                className={`font-medium mb-2 ${themeStyles.textSecondary} flex items-center`}>
                                                 🔧 Code Editor Mode:
                                             </h4>
                                             <p
-                                                className={`text-sm ${textSecondary} mb-3`}>
+                                                className={`text-sm ${themeStyles.textSecondary} mb-3`}>
                                                 Click &quot;Code Editor&quot; to
                                                 switch to advanced coding mode
                                                 with:
                                             </p>
                                             <ul
-                                                className={`text-sm ${textSecondary} space-y-1 ml-4`}>
+                                                className={`text-sm ${themeStyles.textSecondary} space-y-1 ml-4`}>
                                                 <li>
                                                     • Language selection
                                                     (JavaScript, HTML, Python,
@@ -240,12 +237,12 @@ export default function Home() {
                                         {/* Code Input Methods */}
                                         <div>
                                             <h4
-                                                className={`font-medium mb-2 ${textSecondary} flex items-center`}>
+                                                className={`font-medium mb-2 ${themeStyles.textSecondary} flex items-center`}>
                                                 📝 Code Input Methods:
                                             </h4>
                                             <div
                                                 className={`text-xs ${
-                                                    isDark
+                                                    theme === 'dark'
                                                         ? 'bg-gray-700 text-gray-200'
                                                         : 'bg-gray-100 text-gray-800'
                                                 } p-4 rounded space-y-3`}>
@@ -317,10 +314,10 @@ document.querySelector('.container').addEventListener('click', function() {
                                                     </strong>
                                                     <p className='mt-1 text-gray-400'>
                                                         Use the &quot;Code
-                                                        Sections&quot;
-                                                        button to write HTML,
-                                                        CSS, and JavaScript in
-                                                        separate areas.
+                                                        Sections&quot; button to
+                                                        write HTML, CSS, and
+                                                        JavaScript in separate
+                                                        areas.
                                                     </p>
                                                 </div>
                                             </div>
@@ -329,11 +326,11 @@ document.querySelector('.container').addEventListener('click', function() {
                                         {/* Features */}
                                         <div>
                                             <h4
-                                                className={`font-medium mb-2 ${textSecondary} flex items-center`}>
+                                                className={`font-medium mb-2 ${themeStyles.textSecondary} flex items-center`}>
                                                 ✨ Features:
                                             </h4>
                                             <ul
-                                                className={`text-sm ${textSecondary} space-y-1 ml-4`}>
+                                                className={`text-sm ${themeStyles.textSecondary} space-y-1 ml-4`}>
                                                 <li>
                                                     •{' '}
                                                     <strong>
@@ -357,8 +354,7 @@ document.querySelector('.container').addEventListener('click', function() {
                                                         Built-in Examples:
                                                     </strong>{' '}
                                                     Click &quot;Examples&quot;
-                                                    for
-                                                    ready-to-use code
+                                                    for ready-to-use code
                                                 </li>
                                                 <li>
                                                     •{' '}
@@ -388,11 +384,11 @@ document.querySelector('.container').addEventListener('click', function() {
                                         {/* Quick Tips */}
                                         <div>
                                             <h4
-                                                className={`font-medium mb-2 ${textSecondary} flex items-center`}>
+                                                className={`font-medium mb-2 ${themeStyles.textSecondary} flex items-center`}>
                                                 💡 Quick Tips:
                                             </h4>
                                             <ul
-                                                className={`text-sm ${textSecondary} space-y-1 ml-4`}>
+                                                className={`text-sm ${themeStyles.textSecondary} space-y-1 ml-4`}>
                                                 <li>
                                                     • Use{' '}
                                                     <code className='bg-gray-200 dark:bg-gray-600 px-1 rounded'>
@@ -427,4 +423,8 @@ document.querySelector('.container').addEventListener('click', function() {
             </div>
         </div>
     );
-}
+});
+
+Home.displayName = 'Home';
+
+export default Home;
