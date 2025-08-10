@@ -3,22 +3,23 @@
 import React, { useRef, useEffect } from 'react';
 
 interface CodeRunnerProps {
-  html: string;
-  css: string;
-  javascript: string;
+    html: string;
+    css: string;
+    javascript: string;
 }
 
 export default function CodeRunner({ html, css, javascript }: CodeRunnerProps) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+    const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  useEffect(() => {
-    if (iframeRef.current) {
-      const iframe = iframeRef.current;
-      const doc = iframe.contentDocument || iframe.contentWindow?.document;
-      
-      if (doc) {
-        // Create the complete HTML document
-        const fullHtml = `
+    useEffect(() => {
+        if (iframeRef.current) {
+            const iframe = iframeRef.current;
+            const doc =
+                iframe.contentDocument || iframe.contentWindow?.document;
+
+            if (doc) {
+                // Create the complete HTML document
+                const fullHtml = `
           <!DOCTYPE html>
           <html lang="en" dir="ltr">
           <head>
@@ -65,22 +66,22 @@ export default function CodeRunner({ html, css, javascript }: CodeRunnerProps) {
           </html>
         `;
 
-        // Write the content to iframe
-        doc.open();
-        doc.write(fullHtml);
-        doc.close();
-      }
-    }
-  }, [html, css, javascript]);
+                // Write the content to iframe
+                doc.open();
+                doc.write(fullHtml);
+                doc.close();
+            }
+        }
+    }, [html, css, javascript]);
 
-  return (
-    <div className="w-full">
-      <iframe
-        ref={iframeRef}
-        sandbox="allow-scripts allow-same-origin"
-        className="w-full h-64 border-0 bg-white"
-        title="Code Preview"
-      />
-    </div>
-  );
-} 
+    return (
+        <div className='w-full'>
+            <iframe
+                ref={iframeRef}
+                sandbox='allow-scripts allow-same-origin'
+                className='w-full h-64 border-0 bg-white'
+                title='Code Preview'
+            />
+        </div>
+    );
+}

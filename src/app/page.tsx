@@ -18,7 +18,9 @@ export default function Home() {
     const { theme } = useTheme();
 
     const isDark = theme === 'dark';
-    const bgGradient = isDark ? 'from-gray-900 to-gray-800' : 'from-blue-50 to-indigo-100';
+    const bgGradient = isDark
+        ? 'from-gray-900 to-gray-800'
+        : 'from-blue-50 to-indigo-100';
     const textColor = isDark ? 'text-white' : 'text-gray-800';
     const textSecondary = isDark ? 'text-gray-300' : 'text-gray-600';
     const iconColor = isDark ? 'text-blue-400' : 'text-blue-600';
@@ -77,12 +79,15 @@ export default function Home() {
     };
 
     return (
-        <div className={`min-h-screen bg-gradient-to-br ${bgGradient} transition-colors duration-200`}>
+        <div
+            className={`min-h-screen bg-gradient-to-br ${bgGradient} transition-colors duration-200`}>
             <div className='container mx-auto px-4 py-8'>
                 {/* Header */}
                 <div className='text-center mb-8'>
                     <div className='flex items-center justify-center mb-4'>
-                        <ChatBubbleLeftRightIcon className={`h-12 w-12 ${iconColor} mr-3`} />
+                        <ChatBubbleLeftRightIcon
+                            className={`h-12 w-12 ${iconColor} mr-3`}
+                        />
                         <h1 className={`text-4xl font-bold ${textColor}`}>
                             Chat Runner
                         </h1>
@@ -95,7 +100,12 @@ export default function Home() {
 
                 {/* Main Chat Area */}
                 <div className='max-w-4xl mx-auto'>
-                    <div className={`${isDark ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'} rounded-xl shadow-lg overflow-hidden border`}>
+                    <div
+                        className={`${
+                            isDark
+                                ? 'bg-gray-800 border-gray-600'
+                                : 'bg-white border-gray-200'
+                        } rounded-xl shadow-lg overflow-hidden border`}>
                         <div className='h-[600px]'>
                             <ChatBox
                                 messages={messages}
@@ -110,13 +120,20 @@ export default function Home() {
                 <div className='mt-8 max-w-6xl mx-auto'>
                     <div className='grid lg:grid-cols-2 gap-8'>
                         {/* Instructions */}
-                        <div className={`${isDark ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'} rounded-lg p-6 shadow-sm border`}>
-                            <h3 className={`text-lg font-semibold mb-4 ${textColor}`}>
+                        <div
+                            className={`${
+                                isDark
+                                    ? 'bg-gray-800 border-gray-600'
+                                    : 'bg-white border-gray-200'
+                            } rounded-lg p-6 shadow-sm border`}>
+                            <h3
+                                className={`text-lg font-semibold mb-4 ${textColor}`}>
                                 How to use:
                             </h3>
                             <div className='space-y-4'>
                                 <div>
-                                    <h4 className={`font-medium mb-2 ${textSecondary}`}>
+                                    <h4
+                                        className={`font-medium mb-2 ${textSecondary}`}>
                                         Send text message:
                                     </h4>
                                     <p className={`text-sm ${textSecondary}`}>
@@ -124,26 +141,41 @@ export default function Home() {
                                     </p>
                                 </div>
                                 <div>
-                                    <h4 className={`font-medium mb-2 ${textSecondary}`}>
+                                    <h4
+                                        className={`font-medium mb-2 ${textSecondary}`}>
                                         Send code:
                                     </h4>
                                     <p className={`text-sm ${textSecondary}`}>
                                         Send your HTML/CSS/JavaScript code in
-                                        the following format:
+                                        multiple ways:
                                     </p>
-                                    <pre className={`text-xs ${isDark ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-800'} p-2 rounded mt-2 overflow-x-auto`}>
-                                        {`\`\`\`html
+                                    <div
+                                        className={`text-xs ${
+                                            isDark
+                                                ? 'bg-gray-700 text-gray-200'
+                                                : 'bg-gray-100 text-gray-800'
+                                        } p-3 rounded mt-2 space-y-2`}>
+                                        <div>
+                                            <strong>1. Standalone HTML:</strong>
+                                            <pre className='mt-1'>{`<small>Hello World!</small>`}</pre>
+                                        </div>
+                                        <div>
+                                            <strong>2. Standalone CSS:</strong>
+                                            <pre className='mt-1'>{`body { color: blue; }`}</pre>
+                                        </div>
+                                        <div>
+                                            <strong>
+                                                3. Standalone JavaScript:
+                                            </strong>
+                                            <pre className='mt-1'>{`console.log("Hello!");`}</pre>
+                                        </div>
+                                        <div>
+                                            <strong>4. Markdown format:</strong>
+                                            <pre className='mt-1'>{`\`\`\`html
 <div>Hello World!</div>
-\`\`\`
-
-\`\`\`css
-div { color: blue; }
-\`\`\`
-
-\`\`\`javascript
-console.log("Hello!");
-\`\`\``}
-                                    </pre>
+\`\`\``}</pre>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
