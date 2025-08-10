@@ -1,21 +1,21 @@
 # Chat Runner 🚀
 
-**Live Code Sandbox in Chat** - چت کنید و کد HTML/CSS/JavaScript خود را به صورت زنده اجرا کنید!
+**Live Code Sandbox in Chat** - Chat and run your HTML/CSS/JavaScript code live!
 
-## 📋 معرفی پروژه
+## 📋 Project Introduction
 
-Chat Runner یک اپلیکیشن چت تعاملی است که به کاربران امکان ارسال و اجرای کد HTML/CSS/JavaScript را در محیطی امن و زنده می‌دهد. این پروژه با استفاده از Next.js، HeroUI و Socket.IO ساخته شده است.
+Chat Runner is an interactive chat application that allows users to send and execute HTML/CSS/JavaScript code in a secure and live environment. This project is built using Next.js, HeroUI, and Socket.IO.
 
-### ✨ ویژگی‌های کلیدی
+### ✨ Key Features
 
-- 💬 **چت Real-time**: ارسال و دریافت پیام‌ها به صورت زنده
-- 🔧 **اجرای کد زنده**: اجرای امن کد HTML/CSS/JS در iframe
-- 🎨 **UI مدرن**: طراحی زیبا با HeroUI و Tailwind CSS
-- 🔒 **امنیت بالا**: اجرای کد در محیط sandbox شده
-- 📱 **Responsive**: سازگار با تمام دستگاه‌ها
-- 🌐 **پشتیبانی RTL**: پشتیبانی کامل از زبان فارسی
+- 💬 **Real-time Chat**: Send and receive messages in real-time
+- 🔧 **Live Code Execution**: Secure execution of HTML/CSS/JS code in iframe
+- 🎨 **Modern UI**: Beautiful design with HeroUI and Tailwind CSS
+- 🔒 **High Security**: Code execution in sandboxed environment
+- 📱 **Responsive**: Compatible with all devices
+- 🌐 **RTL Support**: Full support for Persian language
 
-## 🛠️ استک تکنولوژی
+## 🛠️ Technology Stack
 
 - **Frontend**: Next.js 15 + React 19
 - **UI Framework**: HeroUI + Tailwind CSS
@@ -24,58 +24,58 @@ Chat Runner یک اپلیکیشن چت تعاملی است که به کاربر�
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS v4
 
-## 🚀 نصب و راه‌اندازی
+## 🚀 Installation and Setup
 
-### پیش‌نیازها
+### Prerequisites
 
 - Node.js 18+ 
-- npm یا yarn
+- npm or yarn
 
-### مراحل نصب
+### Installation Steps
 
-1. **کلون کردن پروژه**
+1. **Clone the project**
 ```bash
 git clone https://github.com/yourusername/chat-runner.git
 cd chat-runner
 ```
 
-2. **نصب وابستگی‌ها**
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. **اجرای پروژه در حالت توسعه**
+3. **Run the project in development mode**
 ```bash
 npm run dev
 ```
 
-4. **باز کردن مرورگر**
+4. **Open browser**
 ```
 http://localhost:3000
 ```
 
-### اسکریپت‌های موجود
+### Available Scripts
 
 ```bash
-npm run dev      # اجرا در حالت توسعه
-npm run build    # ساخت نسخه production
-npm run start    # اجرای نسخه production
-npm run lint     # بررسی کد
+npm run dev      # Run in development mode
+npm run build    # Build production version
+npm run start    # Run production version
+npm run lint     # Code linting
 ```
 
-## 📖 نحوه استفاده
+## 📖 How to Use
 
-### ارسال پیام متنی
-به راحتی پیام خود را در فیلد ورودی تایپ کرده و ارسال کنید.
+### Sending Text Messages
+Simply type your message in the input field and send it.
 
-### ارسال کد HTML/CSS/JavaScript
-کد خود را با فرمت markdown ارسال کنید:
+### Sending HTML/CSS/JavaScript Code
+Send your code using markdown format:
 
 ```markdown
 ```html
 <div class="container">
-  <h1>سلام دنیا!</h1>
-  <p>این یک نمونه کد است.</p>
+  <h1>Hello World!</h1>
+  <p>This is a sample code.</p>
 </div>
 ```
 
@@ -104,87 +104,87 @@ document.querySelector('h1').addEventListener('click', function() {
 ```
 ```
 
-### ویژگی‌های کد
-- **نمایش کد**: کلیک روی "نمایش کد" برای دیدن کد کامل
-- **پیش‌نمایش**: کلیک روی "پیش‌نمایش" برای اجرای زنده کد
-- **امنیت**: کد در محیط sandbox شده اجرا می‌شود
+### Code Features
+- **Show Code**: Click "Show Code" to see the complete code
+- **Preview**: Click "Preview" to run the code live
+- **Security**: Code runs in a sandboxed environment
 
-## 🏗️ ساختار پروژه
+## 🏗️ Project Structure
 
 ```
 chat-runner/
 ├── src/
 │   ├── app/
-│   │   ├── globals.css          # استایل‌های全局
-│   │   ├── layout.tsx           # Layout اصلی
-│   │   └── page.tsx             # صفحه اصلی
+│   │   ├── globals.css          # Global styles
+│   │   ├── layout.tsx           # Main layout
+│   │   └── page.tsx             # Main page
 │   ├── components/
-│   │   ├── ChatBox.tsx          # کامپوننت چت اصلی
-│   │   ├── MessageBubble.tsx    # نمایش پیام‌ها
-│   │   └── CodeRunner.tsx       # اجرای کد در iframe
+│   │   ├── ChatBox.tsx          # Main chat component
+│   │   ├── MessageBubble.tsx    # Message display
+│   │   └── CodeRunner.tsx       # Code execution in iframe
 │   ├── types/
-│   │   └── chat.ts              # تایپ‌های TypeScript
+│   │   └── chat.ts              # TypeScript types
 │   └── utils/
-│       └── codeParser.ts        # پردازش کد
-├── public/                      # فایل‌های استاتیک
+│       └── codeParser.ts        # Code processing
+├── public/                      # Static files
 ├── package.json
 └── README.md
 ```
 
-## 🔧 کامپوننت‌های اصلی
+## 🔧 Main Components
 
 ### ChatBox
-کامپوننت اصلی چت که شامل:
-- نمایش لیست پیام‌ها
-- فرم ارسال پیام
-- اسکرول خودکار
-- نمایش وضعیت loading
+Main chat component that includes:
+- Display message list
+- Message sending form
+- Auto-scroll
+- Loading state display
 
 ### MessageBubble
-نمایش هر پیام با قابلیت‌های:
-- تشخیص نوع پیام (متنی/کد)
-- نمایش کد با syntax highlighting
-- دکمه‌های نمایش/مخفی کردن کد
-- دکمه پیش‌نمایش
+Display each message with features:
+- Message type detection (text/code)
+- Code display with syntax highlighting
+- Show/hide code buttons
+- Preview button
 
 ### CodeRunner
-اجرای امن کد در iframe:
-- محیط sandbox شده
-- تزریق HTML/CSS/JS
-- جلوگیری از دسترسی‌های خطرناک
+Secure code execution in iframe:
+- Sandboxed environment
+- HTML/CSS/JS injection
+- Prevention of dangerous access
 
-## 🎨 طراحی و UI
+## 🎨 Design and UI
 
-### رنگ‌بندی
-- **Primary**: آبی (#3B82F6)
-- **Secondary**: خاکستری (#6B7280)
-- **Background**: گرادیان آبی روشن
-- **Text**: خاکستری تیره (#1F2937)
+### Color Scheme
+- **Primary**: Blue (#3B82F6)
+- **Secondary**: Gray (#6B7280)
+- **Background**: Light blue gradient
+- **Text**: Dark gray (#1F2937)
 
-### فونت
-- **فونت فارسی**: Vazirmatn
-- **فونت انگلیسی**: System fonts
+### Fonts
+- **Persian Font**: Vazirmatn
+- **English Font**: System fonts
 
 ### Responsive Design
-- **Desktop**: حداکثر عرض 4xl
-- **Tablet**: گرید 2 ستونه
-- **Mobile**: تک ستونه
+- **Desktop**: Maximum width 4xl
+- **Tablet**: 2-column grid
+- **Mobile**: Single column
 
-## 🔒 امنیت
+## 🔒 Security
 
 ### Sandbox Environment
-- اجرای کد در iframe با `sandbox="allow-scripts allow-same-origin"`
-- حذف دسترسی به `window.top`, `window.parent`, `window.opener`
-- محدودیت دسترسی به DOM اصلی
+- Code execution in iframe with `sandbox="allow-scripts allow-same-origin"`
+- Remove access to `window.top`, `window.parent`, `window.opener`
+- Limit access to main DOM
 
 ### Input Validation
-- بررسی فرمت کد قبل از اجرا
-- محدودیت اندازه کد
-- فیلتر کردن کدهای خطرناک
+- Check code format before execution
+- Code size limitations
+- Filter dangerous code
 
 ## 🚀 Deployment
 
-### Vercel (پیشنهادی)
+### Vercel (Recommended)
 ```bash
 npm run build
 vercel --prod
@@ -196,27 +196,27 @@ npm run build
 netlify deploy --prod --dir=out
 ```
 
-## 🤝 مشارکت
+## 🤝 Contributing
 
-1. Fork کنید
-2. Branch جدید بسازید (`git checkout -b feature/amazing-feature`)
-3. تغییرات را commit کنید (`git commit -m 'Add amazing feature'`)
-4. Push کنید (`git push origin feature/amazing-feature`)
-5. Pull Request باز کنید
+1. Fork the project
+2. Create a new branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 📝 لایسنس
+## 📝 License
 
-این پروژه تحت لایسنس MIT منتشر شده است.
+This project is licensed under the MIT License.
 
-## 👨‍💻 توسعه‌دهنده
+## 👨‍💻 Developer
 
-**نام**: [نام شما]
-**ایمیل**: [ایمیل شما]
-**GitHub**: [لینک GitHub]
+**Name**: Mohaddese Naghavi
+**Email**: nghv.work@gmail.com
+**GitHub**: github.com/mnghv
 
 ---
 
-⭐ اگر این پروژه برایتان مفید بود، لطفاً ستاره بدهید!
+⭐ If this project was helpful to you, please give it a star!
 
 ---
 
