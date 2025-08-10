@@ -112,23 +112,47 @@ document.querySelector('h1').addEventListener('click', function() {
 ## 🏗️ Project Structure
 
 ```
-chat-runner/
-├── src/
-│   ├── app/
-│   │   ├── globals.css          # Global styles
-│   │   ├── layout.tsx           # Main layout
-│   │   └── page.tsx             # Main page
-│   ├── components/
-│   │   ├── ChatBox.tsx          # Main chat component
-│   │   ├── MessageBubble.tsx    # Message display
-│   │   └── CodeRunner.tsx       # Code execution in iframe
-│   ├── types/
-│   │   └── chat.ts              # TypeScript types
-│   └── utils/
-│       └── codeParser.ts        # Code processing
-├── public/                      # Static files
-├── package.json
-└── README.md
+📁 chat-runner/
+├── 📁 src/
+│   ├── 📁 app/
+│   │   ├── 🌐 globals.css          # Global styles & themes
+│   │   ├── 🏗️ layout.tsx           # Root layout component
+│   │   └── 🏠 page.tsx             # Home page component
+│   ├── 📁 components/
+│   │   ├── 💬 ChatBox.tsx          # Main chat interface
+│   │   ├── 💭 MessageBubble.tsx    # Individual message display
+│   │   ├── 🎨 CodeExamples.tsx     # Code example components
+│   │   ├── ⚡ CodeRunner.tsx       # Live code execution
+│   │   ├── 🌙 ThemeToggle.tsx      # Dark/light mode toggle
+│   │   ├── 🎭 ThemeWrapper.tsx     # Theme context wrapper
+│   │   └── 🔔 Toast.tsx            # Notification component
+│   ├── 📁 config/
+│   │   └── ⚙️ app.ts               # App configuration
+│   ├── 📁 contexts/
+│   │   └── 🌓 ThemeContext.tsx     # Theme management
+│   ├── 📁 types/
+│   │   └── 💬 chat.ts              # TypeScript interfaces
+│   └── 📁 utils/
+│       ├── 🔧 codeParser.ts        # Code parsing utilities
+│       ├── 🧪 codeParser.test.ts   # Parser unit tests
+│       └── 📊 testData.ts          # Test data & mocks
+├── 📁 public/                     # Static assets
+│   ├── 🎨 file.svg
+│   ├── 🌍 globe.svg
+│   ├── ⚡ next.svg
+│   ├── 🚀 vercel.svg
+│   └── 🪟 window.svg
+├── 📁 docs/                       # Documentation
+│   ├── 📖 API.md
+│   ├── 🚀 DEPLOYMENT.md
+│   ├── 🛠️ DEVELOPMENT.md
+│   └── ✨ FEATURES.md
+├── 📄 package.json               # Dependencies & scripts
+├── 📄 tsconfig.json              # TypeScript config
+├── 📄 tailwind.config.js         # Tailwind CSS config
+├── 📄 next.config.ts             # Next.js config
+├── 📄 jest.config.js             # Testing config
+└── 📖 README.md                  # Project documentation
 ```
 
 ## 🔧 Main Components
@@ -210,9 +234,9 @@ This project is licensed under the MIT License.
 
 ## 👨‍💻 Developer
 
-**Name**: Mohaddese Naghavi
-**Email**: nghv.work@gmail.com
-**GitHub**: github.com/mnghv
+- **Name**: Mohaddese Naghavi
+- **Email**: nghv.work@gmail.com
+- **GitHub**: [github.com/mnghv](https://github.com/mnghv)
 
 ---
 
