@@ -102,7 +102,6 @@ document.querySelector('h1').addEventListener('click', function() {
   }, 200);
 });
 ```
-```
 
 ### Code Features
 - **Show Code**: Click "Show Code" to see the complete code
