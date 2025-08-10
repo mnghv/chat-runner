@@ -130,7 +130,7 @@ const Home = React.memo(() => {
                 <div className='max-w-6xl mx-auto'>
                     <div
                         className={`${themeStyles.cardBg} rounded-xl shadow-lg overflow-hidden border`}>
-                        <div className='h-[700px]'>
+                        <div className='h-[600px]'>
                             <ChatBox
                                 messages={messages}
                                 onSendMessage={handleSendMessage}
