@@ -111,48 +111,64 @@ document.querySelector('h1').addEventListener('click', function() {
 
 ## 🏗️ Project Structure
 
+### 📁 Root Directory
 ```
-📁 chat-runner/
-├── 📁 src/
-│   ├── 📁 app/
-│   │   ├── 🌐 globals.css          # Global styles & themes
-│   │   ├── 🏗️ layout.tsx           # Root layout component
-│   │   └── 🏠 page.tsx             # Home page component
-│   ├── 📁 components/
-│   │   ├── 💬 ChatBox.tsx          # Main chat interface
-│   │   ├── 💭 MessageBubble.tsx    # Individual message display
-│   │   ├── 🎨 CodeExamples.tsx     # Code example components
-│   │   ├── ⚡ CodeRunner.tsx       # Live code execution
-│   │   ├── 🌙 ThemeToggle.tsx      # Dark/light mode toggle
-│   │   ├── 🎭 ThemeWrapper.tsx     # Theme context wrapper
-│   │   └── 🔔 Toast.tsx            # Notification component
-│   ├── 📁 config/
-│   │   └── ⚙️ app.ts               # App configuration
-│   ├── 📁 contexts/
-│   │   └── 🌓 ThemeContext.tsx     # Theme management
-│   ├── 📁 types/
-│   │   └── 💬 chat.ts              # TypeScript interfaces
-│   └── 📁 utils/
-│       ├── 🔧 codeParser.ts        # Code parsing utilities
-│       ├── 🧪 codeParser.test.ts   # Parser unit tests
-│       └── 📊 testData.ts          # Test data & mocks
-├── 📁 public/                     # Static assets
-│   ├── 🎨 file.svg
-│   ├── 🌍 globe.svg
-│   ├── ⚡ next.svg
-│   ├── 🚀 vercel.svg
-│   └── 🪟 window.svg
-├── 📁 docs/                       # Documentation
-│   ├── 📖 API.md
-│   ├── 🚀 DEPLOYMENT.md
-│   ├── 🛠️ DEVELOPMENT.md
-│   └── ✨ FEATURES.md
-├── 📄 package.json               # Dependencies & scripts
-├── 📄 tsconfig.json              # TypeScript config
-├── 📄 tailwind.config.js         # Tailwind CSS config
-├── 📄 next.config.ts             # Next.js config
-├── 📄 jest.config.js             # Testing config
-└── 📖 README.md                  # Project documentation
+chat-runner/
+├── src/                    # Source code
+├── public/                 # Static assets
+├── docs/                   # Documentation
+├── package.json           # Dependencies & scripts
+├── tsconfig.json          # TypeScript config
+├── tailwind.config.js     # Tailwind CSS config
+├── next.config.ts         # Next.js config
+├── jest.config.js         # Testing config
+└── README.md              # Project documentation
+```
+
+### 📁 Source Code (`src/`)
+```
+src/
+├── app/                   # Next.js app directory
+│   ├── globals.css        # Global styles & themes
+│   ├── layout.tsx         # Root layout component
+│   └── page.tsx           # Home page component
+├── components/            # React components
+│   ├── ChatBox.tsx        # Main chat interface
+│   ├── MessageBubble.tsx  # Individual message display
+│   ├── CodeExamples.tsx   # Code example components
+│   ├── CodeRunner.tsx     # Live code execution
+│   ├── ThemeToggle.tsx    # Dark/light mode toggle
+│   ├── ThemeWrapper.tsx   # Theme context wrapper
+│   └── Toast.tsx          # Notification component
+├── config/                # Configuration files
+│   └── app.ts             # App configuration
+├── contexts/              # React contexts
+│   └── ThemeContext.tsx   # Theme management
+├── types/                 # TypeScript type definitions
+│   └── chat.ts            # Chat-related interfaces
+└── utils/                 # Utility functions
+    ├── codeParser.ts      # Code parsing utilities
+    ├── codeParser.test.ts # Parser unit tests
+    └── testData.ts        # Test data & mocks
+```
+
+### 📁 Static Assets (`public/`)
+```
+public/
+├── file.svg
+├── globe.svg
+├── next.svg
+├── vercel.svg
+└── window.svg
+```
+
+### 📁 Documentation (`docs/`)
+```
+docs/
+├── API.md
+├── DEPLOYMENT.md
+├── DEVELOPMENT.md
+└── FEATURES.md
 ```
 
 ## 🔧 Main Components
