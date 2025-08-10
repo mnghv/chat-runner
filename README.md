@@ -111,7 +111,7 @@ document.querySelector('h1').addEventListener('click', function() {
 
 ## 🏗️ Project Structure
 
-```
+```bash
 📁 chat-runner/
 ├── 📁 src/
 │   ├── 📁 app/
