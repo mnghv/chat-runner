@@ -109,8 +109,10 @@ const Home = React.memo(() => {
                 {/* Header */}
                 <div className='text-center mb-8'>
                     <div className='flex items-center justify-center mb-4'>
-                        <ChatBubbleLeftRightIcon
-                            className={`h-12 w-12 ${themeStyles.iconColor} mr-3`}
+                        <img
+                            src='/logo.png'
+                            alt='Chat Runner Logo'
+                            className='h-16 w-auto mr-4'
                         />
                         <h1
                             className={`text-4xl font-bold ${themeStyles.textColor}`}>
